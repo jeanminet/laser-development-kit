@@ -114,7 +114,7 @@ class LaseWidget(QtGui.QWidget):
 
     def update_dac(self, index):
         self.driver.dac[index, :] = self.dac_wid[index].data
-        self.driver.set_dac()
+        self.driver.set_dac(channel=[index])
         self.refresh_dac()
         
     def refresh_dac(self):
