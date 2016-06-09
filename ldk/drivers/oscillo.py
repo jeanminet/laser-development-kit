@@ -73,9 +73,8 @@ class Oscillo(Base):
         def set_dac_buffer(self, data, channel):
             pass
         for i in range(2):
-            data = np.uint32(np.mod(np.floor(8192 * self.dac[i,:]) + 8192,16384) + 8192)
-            buff = data[::2] + data[1::2] << 16
-            print np.astype(buff, dtype=np.uint16)
+            data = np.mod(np.floor(8192 * self.dac[i,:]) + 8192,16384) + 8192
+            buff = data[::2] + data[1::2] * 65536
             set_dac_buffer(self, buff, i+1)
         if reset:
             self.reset_acquisition()
