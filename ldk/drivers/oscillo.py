@@ -60,9 +60,6 @@ class Oscillo(Base):
     @command('OSCILLO')
     def reset_acquisition(self): pass
 
-    @write_buffer('OSCILLO')
-    def set_dac_buffer(self, data): pass
-
     def reset_dac(self):
         @command('OSCILLO')
         def reset(self): pass
@@ -72,8 +69,14 @@ class Oscillo(Base):
         if warning:
             if np.max(np.abs(self.dac)) >= 1:
                 print('WARNING : dac out of bounds')
-        self.set_dac_buffer(self.twoint14_to_uint32(self.dac))
-
+        @write_buffer('OSCILLO','I')
+        def set_dac_buffer(self, data, channel):
+            pass
+        for i in range(2):
+            data = np.uint32(np.mod(np.floor(8192 * self.dac[i,:]) + 8192,16384) + 8192)
+            buff = data[::2] + data[1::2] << 16
+            print np.astype(buff, dtype=np.uint16)
+            set_dac_buffer(self, buff, i+1)
         if reset:
             self.reset_acquisition()
 
