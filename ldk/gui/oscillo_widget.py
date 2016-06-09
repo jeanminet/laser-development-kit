@@ -98,12 +98,13 @@ class OscilloWidget(LaseWidget):
         if self.dac_wid[index].dac_on_off_button.text() == 'OFF':
             if not self.math_widget.correction:
                 self.driver.dac[index, :] = self.dac_wid[index].data
+                self.driver.set_dac(channels=[index+1])
             else:
                 self.driver.ideal_amplitude_waveform \
                     = 1167 * self.driver.optical_power[0] / self.driver.power[0] * self.dac_wid[1].data
                 self.driver.amplitude_error = self.driver.ideal_amplitude_waveform
                 self.driver.dac[1, :] = self.driver.get_correction()
-            self.driver.set_dac()
+                self.driver.set_dac()
             self.refresh_dac()
 
     def refresh_adc(self):

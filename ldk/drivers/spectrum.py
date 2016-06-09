@@ -60,20 +60,21 @@ class Spectrum(Base):
     @command('SPECTRUM','I')
     def set_n_avg_min(self, n_avg_min): pass
 
-    @write_buffer('SPECTRUM')
-    def set_dac_buffer(self, data): pass
-
     def reset_dac(self):
         @command('SPECTRUM')
         def reset(self): pass
         reset(self)
 
-    def set_dac(self, warning=False, reset=False):
+    def set_dac(self, warning=False, reset=False, channels=[1,2]):
         if warning:
             if np.max(np.abs(self.dac)) >= 1:
                 print('WARNING : dac out of bounds')
-        self.set_dac_buffer(self.twoint14_to_uint32(self.dac))
-
+        @write_buffer('SPECTRUM','I')
+        def set_dac_buffer(self, data, channel):
+            pass
+        for channel in channels:
+            data = np.mod(np.floor(8192 * self.dac[channel-1,:]) + 8192,16384) + 8192
+            set_dac_buffer(self, data[::2] + data[1::2] * 65536, channel)
         if reset:
             self.reset_acquisition()
     
